@@ -1,0 +1,53 @@
+<div>
+    <h2>Modules</h2>
+
+    <h3>1. AMD loader</h3>
+    <ul>
+        <li><i>require</i></li>
+        <li><i>define</i></li>
+    </ul>
+
+    <h3>2. Creating module</h3>
+    <pre><code class="javascript">// app/counter.js
+define(function () {
+    var privateValue = 0;
+
+    return {
+        increment: function () {
+            privateValue++;
+        },
+
+        decrement: function () {
+            privateValue--;
+        },
+
+        getValue: function () {
+            return privateValue;
+        }
+    };
+});</code></pre>
+
+    <h3>3. Loading module</h3>
+    <pre><code class="javascript">require([
+    "app/counter"
+], function (counter) {
+    log(counter.getValue()); // 0
+    counter.increment();
+    log(counter.getValue()); // 1
+    counter.decrement();
+    log(counter.getValue()); // 0
+});</code></pre>
+
+    <h3>4. Modules loading Modules</h3>
+    <pre><code class="javascript">define([
+    "dojo/_base/declare",
+    "dojo/dom",
+    "app/dateFormatter"
+], function (declare, dom, dateFormatter) {
+    return declare(null, {
+        showDate: function (id, date) {
+            dom.byId(id).innerHTML = dateFormatter.format(date);
+        }
+    });
+});</code></pre>
+</div>

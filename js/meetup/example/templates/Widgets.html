@@ -1,0 +1,195 @@
+<div>
+    <h2>Widgets</h2>
+
+    <h3>1. Sample Widget</h3>
+    <pre><code class="javascript">// meetup/SampleWidget.js
+define(
+    'meetup/SampleWidget',
+    [
+        'dojo/_base/declare',
+        'dijit/_Widget'
+    ],
+    function (
+        declare,
+        Widget
+    ) {
+        return declare(
+            'meetup.SampleWidget',
+            [Widget],
+            {
+
+            }
+        );
+    }
+);</code></pre>
+
+    <h3>2. Getters and Setters</h3>
+    <pre><code class="javascript">// widget attribute
+foo: null,
+// custom getter
+_getFooAttr: function () {
+    // do something and return value
+},
+// custom setter
+_setFooAttr: function (value) {
+    // do somethign with value
+}</code></pre>
+
+    <h3>3. Templated Widgets</h3>
+    <pre><code class="javascript">// meetup/SampleTemplatedWidget.js
+define(
+    'meetup/SampleTemplatedWidget',
+    [
+        'dojo/_base/declare',
+        'dijit/_Widget',
+        'dijit/_TemplatedMixin',
+        'dijit/_WidgetsInTemplateMixin',
+        'dojo/text!meetup/templates/SampleTemplatedWidget.html'
+    ],
+    function (
+        declare,
+        Widget,
+        TemplatedMixin,
+        WidgetsInTemplateMixin,
+        template
+    ) {
+        return declare(
+            'meetup.SampleTemplatedWidget',
+            [Widget, TemplatedMixin, WidgetsInTemplateMixin],
+            {
+                templateString : template,
+
+                postCreate : function ()
+                {
+                    console.log('SampleWidget:postCreate');
+
+                    this.inherited(arguments);
+                }
+            }
+        );
+    }
+);</code></pre>
+
+    <h3>4. Widget Lifecycle</h3>
+    <ul>
+        <li>constructor</li>
+        <li>postMixInProperties</li>
+        <li>buildRendering</li>
+        <li>postCreate</li>
+        <li>startup</li>
+    </ul>
+
+    <pre><code class="nohighlight">meetup.Meetup:constructor
+meetup.Meetup:postMixInProperties
+meetup.Meetup:buildRendering
+meetup.example.GettingStarted:constructor
+meetup.example.GettingStarted:postMixInProperties
+meetup.example.GettingStarted:buildRendering
+meetup.example.GettingStarted:postCreate
+meetup.example.Classes:constructor
+meetup.example.Classes:postMixInProperties
+meetup.example.Classes:buildRendering
+meetup.example.Classes:postCreate
+meetup.example.Modules:constructor
+meetup.example.Modules:postMixInProperties
+meetup.example.Modules:buildRendering
+meetup.example.Modules:postCreate
+meetup.example.Widgets:constructor
+meetup.example.Widgets:postMixInProperties
+meetup.example.Widgets:buildRendering
+meetup.example.Widgets:postCreate
+meetup.Meetup:postCreate
+meetup.Meetup:startup
+meetup.example.GettingStarted:startup
+meetup.example.Classes:startup
+meetup.example.Modules:startup
+meetup.example.Widgets:startup</code></pre>
+
+    <h3>5. Variable Substitution</h3>
+    <pre><code class="javascript">${ property }
+${ propertyObject.property }</code></pre>
+
+    <h3>6. Attach points and events</h3>
+    <pre><code class="html">&lt;div data-dojo-type=&quot;meetup/SampleWidget&quot;
+     data-dojo-props=&quot;selectOptions:{'one':'Pierwsza','two':'Druga'}&quot;&gt;&lt;/div&gt;</code></pre>
+    <pre><code class="html">&lt;div class=&quot;container&quot;&gt; &lt;!-- this is attached to &quot;domNode&quot; --&gt;
+    &lt;div class=&quot;row&quot;&gt;
+        &lt;div class=&quot;col-md-6&quot;
+             data-dojo-attach-point=&quot;columnNode&quot;&gt;Column node&lt;/div&gt;
+        &lt;div class=&quot;col-md-6&quot;&gt;
+            &lt;a href=&quot;#&quot;
+               data-dojo-attach-point=&quot;anchorNode&quot;
+               data-dojo-attach-event=&quot;onclick:anchorClicked,onhover:anchorHovered&quot;&gt;Anchor node&lt;/a&gt;
+            &lt;select class=&quot;form-control&quot;
+                    data-dojo-attach-point=&quot;selectNode&quot;
+                    data-dojo-attach-event=&quot;onchange:selectChanged&quot;&gt;
+                &lt;option&gt;Select option...&lt;/option&gt;
+            &lt;/select&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+    <pre><code class="javascript">define(
+    'meetup/SampleWidget',
+    [
+        'dojo/_base/declare',
+        'dijit/_Widget',
+        'dijit/_TemplatedMixin',
+        'dojo/text!meetup/templates/SampleWidget.html',
+        'dojo/_base/array',
+        'dojo/dom-construct'
+    ],
+    function (
+        declare,
+        Widget,
+        TemplatedMixin,
+        template,
+        array,
+        domConstruct
+    ) {
+        return declare(
+            'meetup.SampleWidget',
+            [Widget, TemplatedMixin],
+            {
+                templateString : template,
+
+                selectOptions : null,
+
+                postCreate : function ()
+                {
+                    array.forEach(this.selectOptions, function (option, value) {
+                        domConstruct.create('option', {
+                            innerHTML : option,
+                            value : value
+                        }, this.selectNode);
+                    }, this);
+
+                    this.inherited(arguments);
+                },
+
+                anchorClicked : function (e)
+                {
+                    this._log('anchor clicked');
+                },
+
+                anchorHovered : function (e)
+                {
+                    this._log('anchorHovered');
+                },
+
+                selectChanged : function (e)
+                {
+                    this._log('select changed: ' + this.selectNode.value);
+                },
+
+                _log : function (message)
+                {
+                    domConstruct.create('h3', {
+                        innerHTML : message
+                    }, this.columnNode);
+                }
+            }
+        );
+    }
+);</code></pre>
+</div>

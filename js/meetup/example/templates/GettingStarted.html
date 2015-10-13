@@ -1,0 +1,280 @@
+<div class="row">
+    <h2>Getting Started</h2>
+
+    <h3>1. Loading Dojo</h3>
+    <pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;&gt;
+    &lt;title&gt;Tutorial: Hello Dojo!&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1 id=&quot;greeting&quot;&gt;Hello&lt;/h1&gt;
+    &lt;!-- load Dojo --&gt;
+    &lt;script src=&quot;//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js&quot;
+    data-dojo-config=&quot;async: true&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <h3>2. Configuring Dojo</h3>
+    <pre><code class="html">&lt;!-- set Dojo configuration, load Dojo --&gt;
+&lt;script&gt;
+dojoConfig= {
+    has: {
+        &quot;dojo-firebug&quot;: true
+    },
+    parseOnLoad: false,
+    foo: &quot;bar&quot;,
+    async: true
+};
+&lt;/script&gt;
+&lt;script src=&quot;//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js&quot;&gt;&lt;/script&gt;</code></pre>
+
+    <pre><code class="html">&lt;script src=&quot;//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js&quot;
+        data-dojo-config=&quot;has:{'dojo-firebug': true}, parseOnLoad: false, foo: 'bar', async: 1&quot;&gt;
+&lt;/script&gt;</code></pre>
+
+    <h3>3. DOM functions</h3>
+    <h4>dojo/dom, dojo/dom-construct</h4>
+    <pre><code class="javascript">require(
+    [
+        'dojo/dom',
+        'dojo/dom-construct'
+    ],
+    function (
+        dom,
+        domConstruct
+    ) {
+        var node = dom.byId('example');
+        node.innerHTML = 'Hello Dojo!';
+
+        domConstruct.create('h1', {
+            innerHTML : 'Hello Dojo!',
+            class : 'greeting'
+        }, node);
+
+        // position reference: "first", "after", "before", "last", "replace" or “only”
+        domConstruct.create('a', {
+            innerHTML : 'Click me!',
+            style : {
+                fontWeight : 'bold'
+            }
+        }, node, 'only');
+
+        domConstruct.empty(node);
+        domConstruct.empty('example');
+        domConstruct.place(node, 'parent', 'replace');
+    }
+);</code></pre>
+    <h4>dojo/dom-attr, dojo/dom-class, dojo/dom-style, dojo/dom-geometry, dojo/on</h4>
+    <pre><code class="html">&lt;input id=&quot;example&quot; name=&quot;example&quot; type=&quot;text&quot; foo=&quot;bar&quot; /&gt;</code></pre>
+    <pre><code class="javascript">require(
+    [
+        'dojo/dom',
+        'dojo/dom-attr',
+        'dojo/dom-class',
+        'dojo/dom-style',
+        'dojo/dom-geometry',
+        'dojo/on'
+    ],
+    function (
+        dom,
+        domAttr,
+        domClass,
+        domStyle,
+        domGeometry,
+        on
+    ) {
+        var node = dom.byId('example');
+
+        if (domAttr.has(node, 'name')) {
+            // node has 'name' attr
+        }
+
+        domAttr.get(node, 'name'); // 'example'
+        domAttr.set(node, 'name', 'other-example');
+        domAttr.set(node, {
+            name : 'example',
+            foo : 'bar'
+        });
+        domAttr.remove(node, 'foo');
+
+        if (domClass.contains(node, 'example')) {
+            // node has 'example' class
+        }
+
+        domClass.add(node, 'example');
+        domClass.add(node, ['example', 'other-example']); // add multiple classes, by array or space separated string
+        domClass.remove(node); // remove all classes
+        domClass.remove(node, 'example other-example');
+        domClass.replace(node, 'new-class', 'old-class');
+        domClass.toggle(node, 'example');
+        domClass.toggle(node, 'example', true);
+
+        domStyle.get(node); // == domStyle.getComputedStyle(node);
+        domStyle.get(node, 'width');
+        domStyle.set(node, 'width', '100px');
+        domStyle.set(node, {
+            width : '100px',
+            height : '100px'
+        });
+
+        // 2nd parameter - includeScroll
+        domGeometry.position(node); // { w: 300: h: 150, x: 700, y: 900 }
+
+        on(node, 'click', function (e) {
+            alert('Example clicked!');
+        });
+
+        on(node, 'a:click', function (e) {
+            alert('Anchor in example clicked!');
+        });
+    }
+);</code></pre>
+    <h4>dojo/_base/fx, dojo/fx</h4>
+    <pre><code class="javascript">require(
+    [
+        'dojo/dom',
+        'dojo/_base/fx',
+        'dojo/fx',
+        'dojo/fx/easing'
+    ],
+    function (
+        dom,
+        baseFx,
+        fx,
+        easing
+    ) {
+        var node = dom.byId('example');
+
+        baseFx.animateProperty({
+            node : node,
+            duration : 500,
+            properties : {
+                width : 300,
+                height: {
+                    start : 100,
+                    end : function (node) {
+                        return window.innerHeight / 2;
+                    }
+                },
+                fontSize: {
+                    end : 14,
+                    units : "pt"
+                }
+            },
+            onEnd : function () {
+                dom.byId('output').innerHTML = 'Completed!';
+            }
+        }).play();
+
+        // easing: linear, quad, cubic, quart, quint, sine, expo, circ, back, elastic, bounce
+        var animationArgs = {
+            node : node,
+            easing : easing.linear
+        };
+
+        // basic animations: fade, wipe
+        var FI = baseFx.fadeIn(animationArgs),
+            FO = baseFx.fadeOut(animationArgs),
+            WI = fx.wipeIn(animationArgs),
+            WO = fx.wipeOut(animationArgs)
+        ;
+
+        fx.chain([FI, FO]).play();
+        fx.combine([WI, WO]).play();
+    }
+);</code></pre>
+    <h4>dojo/query</h4>
+    <pre><code class="javascript">require(
+    [
+        'dojo/dom',
+        'dojo/query',
+        'dojo/NodeList-dom',
+        'dojo/NodeList-fx'
+    ],
+    function (
+        dom,
+        domQuery
+    ) {
+        // domQuery always returns array
+        domQuery('a');
+        domQuery('#example')[0];
+        domQuery('#example a');
+        domQuery('a', dom.byId('example'));
+
+        // only with 'dojo/NodeList-dom'
+        domQuery('a')
+            .addClass('anchor')
+            .attr('title', 'some link')
+            .on('click', function () {
+                alert('You clicked ' + this.innerHTML);
+            })
+        ;
+
+        // only with 'dojo/NodeList-fx'
+        domQuery('a')
+            .animateProperty({
+                properties: {
+                    backgroundColor: {
+                        start: "#fff",
+                        end: "#ffc"
+                    }
+                }
+            })
+            .play()
+        ;
+    }
+);</code></pre>
+
+    <h3>4. AJAX, promises</h3>
+    <pre><code>require(
+    [
+        'dojo/request',
+        'dojo/Deferred'
+    ], function (
+        request,
+        Deferred
+    ){
+        request('request.html').then(function (data) {
+            // success
+        }, function (error) {
+            // error
+        }, function (event) {
+            // progress
+        });
+
+        var promise = request('data.json', {
+            handleAs : 'json',
+            preventCache : true
+        });
+
+        promise.then(function (data) {
+            // success
+        }).otherwise(function (error) {
+            // error
+        }).always(function () {
+
+        });
+
+        promise.cancel();
+        promise.trace();
+        promise.isResolved();
+        promise.isRejected();
+        promise.isFulfilled();
+        promise.isCanceled();
+
+        var deferred = new Deferred();
+        deferred.then(function (data) {
+            // success
+        }, function (error) {
+            // error
+        }, function (event) {
+            // progress
+        });
+
+        deferred.progress(update);
+        deferred.resolve(value);
+        deferred.cancel(reason);
+});</code></pre>
+</div>
